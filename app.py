@@ -5,7 +5,7 @@ from datetime import datetime, date
 app = Flask(__name__)
 
 # データベースの設定（sqliteというファイルに保存しますという指定）
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://todo_list_yjzj_user:xCQtpVP90jdYBDZDbRQMFN45cx9Y4j7Y@dpg-d7ief6ho3t8c73arsijg-a/todo_list_yjzj"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://todo_list_yjzj_user:xCQtpVP90jdYBDZDbRQMFN45cx9Y4j7Y@dpg-d7ief6ho3t8c73arsijg-a.virginia-postgres.render.com/todo_list_yjzj"
 
 db = SQLAlchemy(app)
 
