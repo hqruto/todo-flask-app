@@ -73,5 +73,21 @@ def delete(index):
         db.session.commit()
     return redirect(url_for('home'))
 
+@app.route('/edit/<int:index>')
+def edit(index):
+    task = Todo.query.get(index)
+    return render_template('edit.html', task=task)
+
+@app.route('/update/<int:index>', methods=['POST'])
+def update(index):
+    task = Todo.query.get(index)
+    if task:
+        task.content = request.form.get('task')
+        task.subject = request.form.get('subject')
+        deadline_str = request.form.get('deadline')
+        task.deadline = datetime.strptime(deadline_str, "%Y-%m-%d").date()
+        db.session.commit()
+    return redirect(url_for('home'))
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")

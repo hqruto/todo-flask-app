@@ -59,6 +59,7 @@
 
                                 <!-- 削除ボタン(赤いボタン) を追加 -->
                                 <a href="{{url_for('delete', index=todo.id) }}" class="btn btn-danger btn-sm">削除</a>
+                                <a href="/edit/{{ t.id }}" class="btn btn-warning btn-sm">編集</a>
                             </li>
                             {% endfor %}
                         </ul>
