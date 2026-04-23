@@ -16,6 +16,14 @@ class Todo(db.Model):
     subject = db.Column(db.String(10), nullable=False) #教科
     deadline = db.Column(db.Date, nullable=False) #締切日
     done = db.Column(db.Boolean, default=False) # やったかどうか
+    
+class DemoTask(db.Model):
+    id = db.Column(db.Integer, primary_key=True) # 番号（自動でつく）
+    content = db.Column(db.String(200), nullable=False) # 内容
+    subject = db.Column(db.String(10), nullable=False) #教科
+    deadline = db.Column(db.Date, nullable=False) #締切日
+    done = db.Column(db.Boolean, default=False) # やったかどうか
+
 
 # 最初に一回だけ実行して、空のデータベースファイルを作るおまじない
 with app.app_context():
@@ -34,6 +42,20 @@ def home():
         t.remaining_days = (t.deadline - today).days
     
     return render_template('index.html', todos=todos)
+
+@app.route('/demo')
+def demo_home():
+    # データベースから全てのタスクを読み出す
+    todos = DemoTask.query.order_by(DemoTask.deadline).all()
+    
+    #今日の日付
+    today = date.today()
+    
+    # 各タスクに「残り日数」を追加
+    for t in todos:
+        t.remaining_days = (t.deadline - today).days
+    
+    return render_template('demo_index.html', todos=todos)
 
 @app.route('/add', methods=['POST'])
 def add():
@@ -56,6 +78,27 @@ def add():
         
     return redirect(url_for('home'))
 
+@app.route('/demo/add', methods=['POST'])
+def demo_add():
+    task_content = request.form.get('task')
+    task_subject = request.form.get('subject')
+    task_deadline_str = request.form.get('deadline')
+
+    if task_content and task_subject and task_deadline_str:
+        #"2026-04-20" →date型に変換
+        task_deadline = datetime.strptime(task_deadline_str, "%Y-%m-%d").date()
+        
+        # データベースに新しい行を追加する
+        new_task = DemoTask(
+            subject=task_subject,
+            content=task_content,
+            deadline=task_deadline
+        )
+        db.session.add(new_task)
+        db.session.commit() # 「保存！」と確定させる
+        
+    return redirect(url_for('demo_home'))
+
 @app.route('/check/<int:index>')
 def check(index):
     # IDを使って特定のタスクを探す（indexではなくIDを使うのがDB流）
@@ -65,6 +108,15 @@ def check(index):
         db.session.commit()
     return redirect(url_for('home'))
 
+@app.route('/demo/check/<int:index>')
+def demo_check(index):
+    # IDを使って特定のタスクを探す（indexではなくIDを使うのがDB流）
+    task = DemoTask.query.get(index)
+    if task:
+        task.done = not task.done
+        db.session.commit()
+    return redirect(url_for('demo_home'))
+
 @app.route('/delete/<int:index>')
 def delete(index):
     task = Todo.query.get(index)
@@ -73,10 +125,23 @@ def delete(index):
         db.session.commit()
     return redirect(url_for('home'))
 
+@app.route('/demo/delete/<int:index>')
+def demo_delete(index):
+    task = DemoTask.query.get(index)
+    if task:
+        db.session.delete(task)
+        db.session.commit()
+    return redirect(url_for('demo_home'))
+
 @app.route('/edit/<int:index>')
 def edit(index):
     task = Todo.query.get(index)
     return render_template('edit.html', task=task)
+
+@app.route('/demo/edit/<int:index>')
+def demo_edit(index):
+    task = DemoTask.query.get(index)
+    return render_template('demo_edit.html', task=task)
 
 @app.route('/update/<int:index>', methods=['POST'])
 def update(index):
@@ -88,6 +153,17 @@ def update(index):
         task.deadline = datetime.strptime(deadline_str, "%Y-%m-%d").date()
         db.session.commit()
     return redirect(url_for('home'))
+
+@app.route('/demo/update/<int:index>', methods=['POST'])
+def demo_update(index):
+    task = DemoTask.query.get(index)
+    if task:
+        task.content = request.form.get('task')
+        task.subject = request.form.get('subject')
+        deadline_str = request.form.get('deadline')
+        task.deadline = datetime.strptime(deadline_str, "%Y-%m-%d").date()
+        db.session.commit()
+    return redirect(url_for('demo_home'))
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
