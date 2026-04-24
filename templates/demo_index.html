@@ -15,7 +15,7 @@
                         <h1 class="text-center text-primary mb-4">My 課題ToDo List</h1>
                         
                         <!-- 入力フォーム -->
-                        <form action="/add" method="POST" class="mb-4">
+                        <form action="/demo/add" method="POST" class="mb-4">
 
                             <div class="input-group mb-2">
                                 <input type="text" name="subject"  class="form-control" placeholder="教科 （例：数学）" required>
@@ -37,7 +37,7 @@
                             {% for todo in todos %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <!-- 修正ポイント：全体をクリックできるように <a> タグで囲む -->
-                                <a href="{{ url_for('check', index=todo.id) }}" class="text-decoration-none flex-grow-1">
+                                <a href="{{ url_for('demo_check', index=todo.id) }}" class="text-decoration-none flex-grow-1">
                                     {% if todo.done %}
                                         <!-- doneがTrue(完了)の時の見た目 -->
                                         <span style="text-decoration: line-through; color: gray;">
@@ -58,8 +58,8 @@
                                 </a>
 
                                 <!-- 削除ボタン(赤いボタン) を追加 -->
-                                <a href="{{url_for('delete', index=todo.id) }}" class="btn btn-danger btn-sm">削除</a>
-                                <a href="/edit/{{ todo.id }}" class="btn btn-warning btn-sm">編集</a>
+                                <a href="{{url_for('demo_delete', index=todo.id) }}" class="btn btn-danger btn-sm">削除</a>
+                                <a href="/demo/edit/{{ todo.id }}" class="btn btn-warning btn-sm">編集</a>
                             </li>
                             {% endfor %}
                         </ul>

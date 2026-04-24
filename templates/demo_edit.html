@@ -6,7 +6,7 @@
 <body>
     <h1>課題を編集</h1>
 
-    <form action="/update/{{ task.id }}" method="POST">
+    <form action="/demo/update/{{ task.id }}" method="POST">
         <label>教科</label>
         <input type="text" name="subject" value="{{ task.subject }}" required>
 
@@ -19,6 +19,6 @@
         <button type="submit">保存</button>
     </form>
 
-    <a href="/">戻る</a>
+    <a href="/demo">戻る</a>
 </body>
 </html>
